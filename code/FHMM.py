@@ -80,9 +80,8 @@ def sort_transition_matrix(mapping, A):
     """
     num_elements = len(A)
     A_new = np.zeros((num_elements, num_elements))
-    for i in range(num_elements):
-        for j in range(num_elements):
-            A_new[i, j] = A[mapping[i], mapping[j]]
+    for i, j in itertools.product(range(num_elements), range(num_elements)):
+        A_new[i, j] = A[mapping[i], mapping[j]]
     return A_new
 
 
@@ -103,11 +102,7 @@ def return_sorting_mapping(means):
     means_copy = deepcopy(means)
     means_copy = np.sort(means_copy, axis=0)
 
-    # Finding mapping
-    mapping = {}
-    for i, val in enumerate(means_copy):
-        mapping[i] = np.where(val == means)[0][0]
-    return mapping
+    return {i: np.where(val == means)[0][0] for i, val in enumerate(means_copy)}
 
 def create_combined_hmm(model):
     list_pi = [model[appliance].startprob_ for appliance in model]
@@ -238,13 +233,10 @@ class FHMM():
         :param test_mains: test dataframe with aggregate data
         """
 
-        # Array of learnt states
-        learnt_states_array = []
         test_mains = test_mains.dropna()
         length = len(test_mains.index)
         temp = test_mains.values.reshape(length, 1)
-        learnt_states_array.append(self.model.predict(temp))
-
+        learnt_states_array = [self.model.predict(temp)]
         # Model
         means = OrderedDict()
         for elec_meter, model in self.individual.iteritems():
@@ -261,10 +253,7 @@ class FHMM():
             decoded_states_array.append(decoded_states)
             decoded_power_array.append(decoded_power)
 
-        prediction = pd.DataFrame(
-            decoded_power_array[0], index=test_mains.index)
-
-        return prediction
+        return pd.DataFrame(decoded_power_array[0], index=test_mains.index)
 
 
     def disaggregate(self, mains, output_datastore, sample_period = 20):

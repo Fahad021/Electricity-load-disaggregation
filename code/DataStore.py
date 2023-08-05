@@ -72,10 +72,7 @@ class DataStore(object):
         :param select_channels: list of channel ID's
         :return: aggregated dataframe
         '''
-        if not select_channels:
-            select_list = self.channels.keys()
-        else:
-            select_list = select_channels
+        select_list = self.channels.keys() if not select_channels else select_channels
         agg_df = self.select_window(select_list.pop(), start, end, resample_freq = freq)
         while select_list:
             ch_df = self.select_window(select_list.pop(), start, end, resample_freq = freq)

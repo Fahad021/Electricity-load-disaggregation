@@ -26,10 +26,7 @@ def train_test_split(dataframe, split, second_split = None):
         return df[:split], df[split:]
 
 def create_matrix(appliance,good_chunks = True):
-    if not good_chunks:
-        power_data = appliance.power_data
-    else:
-        power_data = appliance.good_chunks
+    power_data = appliance.power_data if not good_chunks else appliance.good_chunks
     return power_data.values.reshape((-1, 1))
 
 def cluster(x_train,x_test, max_number_clusters):

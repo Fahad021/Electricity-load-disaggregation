@@ -31,8 +31,9 @@ def r2(model,obs_levels):
     means = model.means_.round().astype(int).flatten().tolist()
     predict_levels = np.array([means[state] for state in hidden_states]).reshape(obs_levels.shape)
     obs_mean = np.mean(obs_levels)
-    r2 = 1 - (np.sum((obs_levels - predict_levels)**2))/np.sum((obs_levels - obs_mean)**2)
-    return r2
+    return 1 - (np.sum((obs_levels - predict_levels) ** 2)) / np.sum(
+        (obs_levels - obs_mean) ** 2
+    )
 
 class HMM():
     def __init__(self, X_test, X_train):
@@ -78,8 +79,9 @@ class HMM():
     def HMM_total_accuracy(self, obs_levels, state_means):
         hidden_states = self.model.predict(obs_levels)
         predict_levels = [state_means[state] for state in hidden_states]
-        test_error = 1 - (np.sum(obs_levels[:,0]) - np.sum(predict_levels))/np.sum(obs_levels[:,0])
-        return test_error
+        return 1 - (np.sum(obs_levels[:, 0]) - np.sum(predict_levels)) / np.sum(
+            obs_levels[:, 0]
+        )
 
     def HMM_MAD_perc(self,obs_levels, state_means):
         hidden_states = self.model.predict(obs_levels)
